@@ -1,50 +1,28 @@
-package main
+package solver
 
 import (
 	"bufio"
-	"fmt"
 	"log"
 	"os"
-	"sort"
 	"strings"
 )
-
-type sortRunes []rune
-
-func (s sortRunes) Less(i, j int) bool {
-	return s[i] < s[j]
-}
-
-func (s sortRunes) Len() int {
-	return len(s)
-}
-func (s sortRunes) Swap(i, j int) {
-	s[i], s[j] = s[j], s[i]
-}
-
-func sortWord(word string) string {
-	lowerWord := strings.ToLower(word)
-	runes := []rune(lowerWord)
-
-	sort.Sort(sortRunes(runes))
-
-	return string(runes)
-}
 
 // Solver represents the word jumble solver
 type Solver struct {
 	Dict map[string][]string
 }
 
+// NewSolver will create a new solver object and create underlying map of the dictonary
 func NewSolver() *Solver {
 	solver := &Solver{Dict: make(map[string][]string)}
 
-	solver.GenerateDict()
+	solver.generateDict()
 
 	return solver
 }
 
-func (s *Solver) GenerateDict() {
+// generateDict will generate a sorted string key with array of strings with those characters map
+func (s *Solver) generateDict() {
 	path := "/usr/share/dict/words"
 
 	file, err := os.Open(path)
@@ -66,6 +44,7 @@ func (s *Solver) GenerateDict() {
 	}
 }
 
+// SolveWord takes a jumbled word and then returns the solved version of it
 func (s *Solver) SolveWord(inputWord string) []string {
 	sortedWord := sortWord(inputWord)
 
@@ -76,6 +55,7 @@ func (s *Solver) SolveWord(inputWord string) []string {
 	return nil
 }
 
+// SolveWords takes a slice of words, and then will solve every one of them and return a slice of the answers
 func (s *Solver) SolveWords(inputWords []string) []string {
 	var output []string
 
@@ -86,10 +66,4 @@ func (s *Solver) SolveWords(inputWords []string) []string {
 	}
 
 	return output
-}
-
-func main() {
-	solver := NewSolver()
-
-	fmt.Println(solver.SolveWord("crtolualca"))
 }
