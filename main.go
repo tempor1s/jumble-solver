@@ -22,6 +22,15 @@ func (s sortRunes) Swap(i, j int) {
 	s[i], s[j] = s[j], s[i]
 }
 
+func sortWord(word string) string {
+	lowerWord := strings.ToLower(word)
+	runes := []rune(lowerWord)
+
+	sort.Sort(sortRunes(runes))
+
+	return string(runes)
+}
+
 // Solver represents the word jumble solver
 type Solver struct {
 	Dict map[string][]string
@@ -50,27 +59,37 @@ func (s *Solver) GenerateDict() {
 
 	for scanner.Scan() {
 		// Convert string to lower and convert it into rune format
-		lowerString := strings.ToLower(scanner.Text())
-		runes := []rune(lowerString)
-		// Sort the runes
-		sort.Sort(sortRunes(runes))
-		s.Dict[string(runes)] = append(s.Dict[string(runes)], lowerString)
+		normalWord := strings.ToLower(scanner.Text())
+		sortedWord := sortWord(normalWord)
+
+		s.Dict[sortedWord] = append(s.Dict[sortedWord], normalWord)
 	}
 }
 
 func (s *Solver) SolveWord(inputWord string) []string {
-	runes := []rune(strings.ToLower(inputWord))
-	sort.Sort(sortRunes(runes))
+	sortedWord := sortWord(inputWord)
 
-	if s.Dict[string(runes)] != nil {
-		return s.Dict[string(runes)]
+	if s.Dict[sortedWord] != nil {
+		return s.Dict[sortedWord]
 	}
 
 	return nil
 }
 
+func (s *Solver) SolveWords(inputWords []string) []string {
+	var output []string
+
+	for _, word := range inputWords {
+		solvedWords := s.SolveWord(word)
+
+		output = append(output, solvedWords...)
+	}
+
+	return output
+}
+
 func main() {
 	solver := NewSolver()
 
-	fmt.Println(solver.SolveWord("dgo"))
+	fmt.Println(solver.SolveWord("crtolualca"))
 }
